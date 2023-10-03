@@ -1,0 +1,177 @@
+import math, random, array, pickle
+global data
+def pred():
+  # Get 
+  cv = input("Please enter your stock's name\n>")
+  print()
+
+
+  print("1 = Small Cap")
+  print("2 = Medium Cap")
+  print("3 = Large Cap")
+  
+  mc = float(input("Please enter your stock's market cap\n>"))
+  print()
+
+  
+  
+  # Get 52 week numbers
+  ftwh = 35671
+  ftwh = float(ftwh)
+  print()
+  ftwl = 28661
+  ftwl = float(ftwl)
+
+  # Get day numbers
+
+  dh = input("Please enter your stock's day high\n>")
+  dh = float(dh)
+  print()
+  dl = input("Please enter your stock's day low\n>")
+  dl = float(dl)
+  
+  # Calculations-
+
+  ftwa = (ftwh + ftwl)/2
+  da = (dl + dh)/2  
+  
+  ddif = (da - dl)
+
+  avgs = []
+
+  dlt = dl * 10
+  
+  dht = dh * 10
+
+  dat = da * 10
+  
+  g = 0
+
+  tdat = dat
+  tdlt = dlt
+  tdht = dht
+  
+  while g < 1000:
+    i = 0
+    
+    while i < 365:
+      flux = random.uniform(dlt, dht)
+      gronco = 0
+      if i < 31:
+        gronco = 0.001347 * mc
+      if i > 31 and i < 61:
+        gronco = 0.000567 * mc
+      if i > 61 and i < 89:
+        gronco = 0.000416* mc
+      if i > 89 and i < 120:
+        gronco = 0.000171 * mc
+      if i > 120 and i < 150:
+        gronco = 0.000314 * mc
+      if i > 150 and i < 181:
+        gronco = 0.000208 * mc
+      if i > 181 and i < 212:
+        gronco = 0.000233 * mc
+      if i > 212 and i < 233:
+        gronco = 0.00029 * mc
+      if i > 233 and i < 264:
+        gronco = 0.000307 * mc
+      if i > 264 and i < 295:
+        gronco = 0.000235 * mc
+      if i > 295:
+        gronco = 0.00035 * mc
+
+      if flux < dat:
+        dlt -= ddif
+        dht -= ddif
+        dat -= ddif
+        dlt = dlt - (dlt * gronco)
+        dht = dht - (dht * gronco)
+        dat = dat - (dat * gronco)
+      if flux > dat:
+        dlt += ddif
+        dht += ddif
+        dat += ddif
+        dlt = dlt + (dlt * gronco)
+        dht = dht + (dht * gronco)
+        dat = dat + (dat * gronco)
+      i += 1
+        
+    avgs.append(dat / 10)
+    dat = tdat
+    dlt = tdlt
+    dht = tdht
+    g += 1
+  j = 0
+
+  tftwl = ftwl
+  tftwh = ftwh
+  tftwa = ftwa 
+  
+  ftws = []
+  
+  
+  while j < 1000:
+    la = 0
+    tftws = 0
+    while la < 1:
+      fluxw = random.uniform(ftwl, ftwh)
+      la += 1
+      tftws = 0
+      tftws = fluxw - (fluxw * .000314)
+        
+    ftws.append(tftws - (tftws / 35671))
+    ftwl = tftwl
+    ftwh = tftwh
+    ftwa = tftwa 
+    j += 1
+    
+  def average( a , n ):
+    sum = 0
+    for le in range(n):
+        sum += a[le]
+    return sum/n
+  #Driver code
+  n = len(avgs)
+  wultavg = average(ftws, n)
+  ultavg = average(avgs, n)
+  traeger = 0
+  if ultavg > da:
+    traeger = ((35671 - wultavg)/wultavg)/1000
+  if ultavg < da:
+    traeger = ((wultavg - 28661)/28661)/1000
+
+  ultavg = ultavg - (ultavg * traeger)
+  # End calculations-
+
+  print("Your stock should be valued at", ultavg, "in a year.")
+    
+
+  
+
+  
+  #---------------------------------------------------
+
+  
+  # Save session
+  data = {
+    'Stock': cv,
+    'Initial Low Day Value': dl,
+    'Initial High Day Value': dh,
+    'Result': ultavg
+  }
+  
+  with open('data.pickle', 'wb') as f:
+    # Pickle the 'data' dictionary using the highest protocol available.
+    pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+
+  
+choi = input("Would you like to (1. create a new prediction or (2. access a previous?\n>")
+if choi == "1":
+  
+  pred()
+if choi == "2":
+  with open('data.pickle', 'rb') as f:
+  # The protocol version used is detected automatically, so we do not
+  # have to specify it.
+      data = pickle.load(f)
+  print(data)
